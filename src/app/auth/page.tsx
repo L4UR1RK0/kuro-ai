@@ -4,8 +4,8 @@ import { AuthForm } from '@/components/auth/AuthForm'
 
 export default async function AuthPage() {
   const supabase = await createClient()
-  const { data: { claims } } = await supabase.auth.getClaims()
-  if (claims) redirect('/')
+  const { data } = await supabase.auth.getClaims()
+  if (data?.claims) redirect('/')
 
   return (
     <div className="min-h-screen bg-[#08080f] flex items-center justify-center p-4">

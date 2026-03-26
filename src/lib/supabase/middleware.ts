@@ -23,7 +23,8 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const { data: { claims } } = await supabase.auth.getClaims()
+  const { data } = await supabase.auth.getClaims()
+  const claims = data?.claims ?? null
 
   if (!claims && !request.nextUrl.pathname.startsWith('/auth')) {
     const url = request.nextUrl.clone()
