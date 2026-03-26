@@ -44,6 +44,10 @@ export interface Task {
   recurrence_end_date?: string
   created_at: string
   updated_at: string
+  /** Client-side only: true when this is an expanded recurring instance (never persisted) */
+  _recurringInstance?: boolean
+  /** Client-side only: the source task's real DB id (never persisted) */
+  _sourceTaskId?: string
 }
 
 export interface Habit {

@@ -9,6 +9,7 @@ interface PlannerState {
   isTaskModalOpen: boolean
   editingTask: Task | null
   selectedSlotTime: string | null
+  visibleRange: { from: string; to: string } | null
 
   setSelectedDate: (date: Date) => void
   setView: (view: CalendarView) => void
@@ -18,6 +19,7 @@ interface PlannerState {
   removeTask: (id: string) => void
   openTaskModal: (time?: string, task?: Task) => void
   closeTaskModal: () => void
+  setVisibleRange: (range: { from: string; to: string }) => void
 }
 
 export const usePlannerStore = create<PlannerState>((set) => ({
@@ -27,6 +29,7 @@ export const usePlannerStore = create<PlannerState>((set) => ({
   isTaskModalOpen: false,
   editingTask: null,
   selectedSlotTime: null,
+  visibleRange: null,
 
   setSelectedDate: (date) => set({ selectedDate: date }),
   setView: (view) => set({ view }),
@@ -39,4 +42,5 @@ export const usePlannerStore = create<PlannerState>((set) => ({
     set({ isTaskModalOpen: true, selectedSlotTime: time ?? null, editingTask: task ?? null }),
   closeTaskModal: () =>
     set({ isTaskModalOpen: false, editingTask: null, selectedSlotTime: null }),
+  setVisibleRange: (range) => set({ visibleRange: range }),
 }))
