@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Plus, CheckSquare, Check } from 'lucide-reac
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useEffect } from 'react'
+import { HabitsPanel } from '@/components/habits/HabitsPanel'
 
 export function Sidebar() {
   const { selectedDate, setSelectedDate, openTaskModal, tasks, view, updateTask } = usePlannerStore()
@@ -102,7 +103,7 @@ export function Sidebar() {
       </div>
 
       {/* Today's tasks list */}
-      <div className="flex-1 overflow-y-auto px-4">
+      <div className="flex-1 overflow-y-auto px-4 pb-2">
         <p className="text-xs text-white/30 font-medium mb-2 uppercase tracking-wider">
           {format(selectedDate, 'MMM d')}
         </p>
@@ -143,6 +144,11 @@ export function Sidebar() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Habits panel */}
+      <div className="border-t border-white/5 pb-4">
+        <HabitsPanel selectedDate={selectedDate} />
       </div>
     </aside>
   )
