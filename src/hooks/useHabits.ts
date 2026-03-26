@@ -76,33 +76,20 @@ export function useHabits() {
       const dateStr = format(date, 'yyyy-MM-dd')
       const newCompleted = !currentCompleted
 
-      const { data: existing } = await supabase
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return { data: null, error: new Error('Not authenticated') }
+
+      const { data, error } = await supabase
         .from('habit_logs')
-        .select('id')
-        .eq('habit_id', habitId)
-        .eq('date', dateStr)
-        .maybeSingle()
+        .upsert(
+          { habit_id: habitId, user_id: user.id, date: dateStr, completed: newCompleted },
+          { onConflict: 'habit_id,date' },
+        )
+        .select()
+        .single()
 
-      let result
-      if (existing) {
-        result = await supabase
-          .from('habit_logs')
-          .update({ completed: newCompleted })
-          .eq('id', existing.id)
-          .select()
-          .single()
-      } else {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) return { data: null, error: new Error('Not authenticated') }
-        result = await supabase
-          .from('habit_logs')
-          .insert({ habit_id: habitId, user_id: user.id, date: dateStr, completed: newCompleted })
-          .select()
-          .single()
-      }
-
-      if (!result.error && result.data) upsertLog(result.data as HabitLog)
-      return { data: result.data, error: result.error }
+      if (!error && data) upsertLog(data as HabitLog)
+      return { data, error }
     },
     [supabase, upsertLog],
   )

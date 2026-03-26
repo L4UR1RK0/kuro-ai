@@ -56,7 +56,6 @@ export function HabitBlock({ habit, completed, onToggle, onEdit }: HabitBlockPro
             ? cn('border-transparent', colors.dot ?? colors.bg)
             : 'border-white/20 hover:border-white/40',
         )}
-        style={completed ? undefined : undefined}
       >
         {completed && <Check className="w-3 h-3 text-white" />}
       </button>
