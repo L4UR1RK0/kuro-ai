@@ -3,14 +3,14 @@
 import { usePlannerStore } from '@/store/planner'
 import { useTasks } from '@/hooks/useTasks'
 import { format, addDays, subDays, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameDay, isToday, isSameMonth } from 'date-fns'
-import { ChevronLeft, ChevronRight, Plus, CheckSquare } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, CheckSquare, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useEffect } from 'react'
 
 export function Sidebar() {
-  const { selectedDate, setSelectedDate, openTaskModal, tasks, view } = usePlannerStore()
-  const { fetchTasksForRange } = useTasks()
+  const { selectedDate, setSelectedDate, openTaskModal, tasks, view, updateTask } = usePlannerStore()
+  const { fetchTasksForRange, toggleComplete } = useTasks()
 
   const monthStart = startOfMonth(selectedDate)
   const monthEnd = endOfMonth(selectedDate)
@@ -111,19 +111,35 @@ export function Sidebar() {
         ) : (
           <div className="space-y-1">
             {todayTasks.map((task) => (
-              <button
+              <div
                 key={task.id}
+                role="button"
+                tabIndex={0}
+                data-testid={`sidebar-task-${task.id}`}
                 onClick={() => usePlannerStore.getState().openTaskModal(undefined, task)}
-                className="w-full text-left rounded-lg px-2 py-1.5 hover:bg-white/5 transition-colors"
+                className="w-full text-left rounded-lg px-2 py-1.5 hover:bg-white/5 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2">
-                  <span className={cn('w-2 h-2 rounded-full shrink-0', `bg-${task.color}-500`)} />
+                  <button
+                    data-testid={`sidebar-toggle-${task.id}`}
+                    className={cn(
+                      'w-3 h-3 rounded-full border border-white/40 shrink-0 flex items-center justify-center',
+                      task.completed && 'bg-white/30',
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      updateTask({ ...task, completed: !task.completed })
+                      toggleComplete(task)
+                    }}
+                  >
+                    {task.completed && <Check className="w-2 h-2 text-white/80" />}
+                  </button>
                   <span className={cn('text-xs text-white/70 truncate', task.completed && 'line-through opacity-50')}>
                     {task.title}
                   </span>
                 </div>
                 <p className="text-[10px] text-white/30 ml-4">{task.start_time} – {task.end_time}</p>
-              </button>
+              </div>
             ))}
           </div>
         )}

@@ -6,6 +6,7 @@ import { TaskIconComponent } from '@/lib/icons'
 import { cn } from '@/lib/utils'
 import { Check } from 'lucide-react'
 import { usePlannerStore } from '@/store/planner'
+import { useTasks } from '@/hooks/useTasks'
 
 interface TaskBlockProps {
   task: Task
@@ -14,7 +15,8 @@ interface TaskBlockProps {
 }
 
 export function TaskBlock({ task, style, compact }: TaskBlockProps) {
-  const { openTaskModal } = usePlannerStore()
+  const { openTaskModal, updateTask } = usePlannerStore()
+  const { toggleComplete } = useTasks()
   const colors = COLOR_MAP[task.color]
 
   return (
@@ -30,6 +32,20 @@ export function TaskBlock({ task, style, compact }: TaskBlockProps) {
       onClick={() => openTaskModal(undefined, task)}
     >
       <div className="flex items-center gap-2 min-w-0">
+        <button
+          data-testid="toggle-complete"
+          className={cn(
+            'rounded-full w-4 h-4 border border-white/40 flex items-center justify-center shrink-0 hover:border-white/80 transition-colors',
+            task.completed && 'bg-white/20',
+          )}
+          onClick={(e) => {
+            e.stopPropagation()
+            updateTask({ ...task, completed: !task.completed })
+            toggleComplete(task)
+          }}
+        >
+          {task.completed && <Check className="w-2 h-2 text-white/80" />}
+        </button>
         <div className={cn('rounded-full p-1 shrink-0', colors.bg)}>
           <TaskIconComponent icon={task.icon} className={cn('w-3 h-3', colors.text)} />
         </div>
@@ -43,7 +59,6 @@ export function TaskBlock({ task, style, compact }: TaskBlockProps) {
             </p>
           )}
         </div>
-        {task.completed && <Check className="w-3 h-3 text-white/60 shrink-0" />}
       </div>
     </div>
   )
