@@ -15,12 +15,19 @@ vi.mock('@/components/ui/button', () => ({
     </button>
   ),
 }))
-vi.mock('lucide-react', () => ({
-  ChevronLeft: () => <div data-testid="chevron-left" />,
-  ChevronRight: () => <div data-testid="chevron-right" />,
-  Plus: () => <div data-testid="plus-icon" />,
-  CheckSquare: () => <div data-testid="check-square-icon" />,
-  Check: () => <div data-testid="check-icon" />,
+vi.mock('lucide-react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('lucide-react')>()
+  return {
+    ...actual,
+    ChevronLeft: () => <div data-testid="chevron-left" />,
+    ChevronRight: () => <div data-testid="chevron-right" />,
+    Plus: () => <div data-testid="plus-icon" />,
+    CheckSquare: () => <div data-testid="check-square-icon" />,
+    Check: () => <div data-testid="check-icon" />,
+  }
+})
+vi.mock('@/components/habits/HabitsPanel', () => ({
+  HabitsPanel: () => <div data-testid="habits-panel" />,
 }))
 
 import { usePlannerStore } from '@/store/planner'
