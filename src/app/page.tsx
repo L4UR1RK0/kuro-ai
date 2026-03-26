@@ -4,8 +4,8 @@ import { PlannerApp } from '@/components/planner/PlannerApp'
 
 export default async function HomePage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/auth')
+  const { data: { claims } } = await supabase.auth.getClaims()
+  if (!claims) redirect('/auth')
 
   return <PlannerApp />
 }
