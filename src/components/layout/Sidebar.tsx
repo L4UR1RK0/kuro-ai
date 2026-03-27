@@ -7,15 +7,23 @@ import { format, addDays, subDays, addMonths, subMonths, startOfMonth, endOfMont
 import { ChevronLeft, ChevronRight, Plus, CheckSquare, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { HabitsPanel } from '@/components/habits/HabitsPanel'
 
 export function Sidebar() {
   const { selectedDate, setSelectedDate, openTaskModal, tasks, view, updateTask } = usePlannerStore()
   const { fetchTasksForRange, toggleComplete } = useTasks()
 
-  const monthStart = startOfMonth(selectedDate)
-  const monthEnd = endOfMonth(selectedDate)
+  // calendarMonth drives the mini-calendar display only — never overwrites selectedDate
+  const [calendarMonth, setCalendarMonth] = useState(() => startOfMonth(selectedDate))
+
+  // Keep mini-calendar in sync when selectedDate is changed externally (topbar nav, day click)
+  useEffect(() => {
+    setCalendarMonth(startOfMonth(selectedDate))
+  }, [selectedDate])
+
+  const monthStart = startOfMonth(calendarMonth)
+  const monthEnd = endOfMonth(calendarMonth)
   const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 })
   const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 1 })
   const days = eachDayOfInterval({ start: gridStart, end: gridEnd })
@@ -46,13 +54,13 @@ export function Sidebar() {
       {/* Mini calendar */}
       <div className="px-4 pb-4">
         <div className="flex items-center justify-between mb-3">
-          <button onClick={() => setSelectedDate(subMonths(selectedDate, 1))} className="p-1 rounded hover:bg-white/10 text-white/60">
+          <button onClick={() => setCalendarMonth(subMonths(calendarMonth, 1))} className="p-1 rounded hover:bg-white/10 text-white/60">
             <ChevronLeft className="w-4 h-4" />
           </button>
           <span className="text-sm font-medium text-white/80">
-            {format(selectedDate, 'MMMM yyyy')}
+            {format(calendarMonth, 'MMMM yyyy')}
           </span>
-          <button onClick={() => setSelectedDate(addMonths(selectedDate, 1))} className="p-1 rounded hover:bg-white/10 text-white/60">
+          <button onClick={() => setCalendarMonth(addMonths(calendarMonth, 1))} className="p-1 rounded hover:bg-white/10 text-white/60">
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
@@ -70,7 +78,7 @@ export function Sidebar() {
             const key = format(day, 'yyyy-MM-dd')
             const hasTask = taskDates.has(key)
             const selected = isSameDay(day, selectedDate)
-            const inMonth = isSameMonth(day, selectedDate)
+            const inMonth = isSameMonth(day, calendarMonth)
 
             return (
               <button

@@ -66,7 +66,8 @@ export function useHabits() {
         .select('*')
         .eq('date', dateStr)
 
-      if (!error && data) setLogs(data as HabitLog[])
+      if (error) console.error('[useHabits] fetchHabitLogs failed', { dateStr, error })
+      else if (data) setLogs(data as HabitLog[])
     },
     [supabase, setLogs],
   )
@@ -88,7 +89,11 @@ export function useHabits() {
         .select()
         .single()
 
-      if (!error && data) upsertLog(data as HabitLog)
+      if (error) {
+        console.error('[useHabits] logHabit upsert failed', { habitId, dateStr, error })
+      } else if (data) {
+        upsertLog(data as HabitLog)
+      }
       return { data, error }
     },
     [supabase, upsertLog],
