@@ -8,6 +8,7 @@ import { MultiDayView } from './MultiDayView'
 import { WeekView } from './WeekView'
 import { MonthView } from './MonthView'
 import { TaskModal } from '@/components/tasks/TaskModal'
+import { WeekStrip } from './WeekStrip'
 
 export function PlannerApp() {
   const { view } = usePlannerStore()
@@ -17,6 +18,7 @@ export function PlannerApp() {
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <TopBar />
+        <WeekStrip />
         <div className="flex-1 overflow-hidden flex flex-col">
           {view === 'day' && <DayView />}
           {view === 'multiday' && <MultiDayView />}
