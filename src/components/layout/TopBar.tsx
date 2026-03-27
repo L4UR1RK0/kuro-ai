@@ -1,10 +1,11 @@
 'use client'
 
 import { usePlannerStore } from '@/store/planner'
-import { format, addDays, subDays, addWeeks, subWeeks, addMonths, subMonths } from 'date-fns'
+import { format, addDays, subDays, addWeeks, subWeeks, addMonths, subMonths, startOfDay } from 'date-fns'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { CalendarView } from '@/types'
 import { cn } from '@/lib/utils'
+import { weekRangeLabel } from '@/lib/time'
 
 const VIEWS: { label: string; value: CalendarView }[] = [
   { label: 'Day', value: 'day' },
@@ -31,13 +32,13 @@ export function TopBar() {
           <ChevronLeft className="w-4 h-4" />
         </button>
         <button
-          onClick={() => setSelectedDate(new Date())}
+          onClick={() => setSelectedDate(startOfDay(new Date()))}
           className="text-sm font-medium text-white/80 hover:text-white transition-colors min-w-[120px] text-center"
         >
           {view === 'month'
             ? format(selectedDate, 'MMMM yyyy')
             : view === 'week'
-            ? `${format(selectedDate, 'MMM d')} – ${format(addDays(selectedDate, 6), 'MMM d, yyyy')}`
+            ? weekRangeLabel(selectedDate)
             : format(selectedDate, 'MMMM d, yyyy')}
         </button>
         <button onClick={() => navigate(1)} className="p-1.5 rounded-lg hover:bg-white/10 text-white/60 transition-colors">

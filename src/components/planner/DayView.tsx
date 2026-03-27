@@ -37,7 +37,7 @@ export function DayView() {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
     const offsetY = e.clientY - rect.top
     const minutes = Math.floor((offsetY / HOUR_HEIGHT) * 60)
-    const roundedMin = Math.round(minutes / 15) * 15
+    const roundedMin = Math.min(Math.round(minutes / 15) * 15, 45)
     const time = `${String(hour).padStart(2, '0')}:${String(roundedMin).padStart(2, '0')}`
     openTaskModal(time)
   }

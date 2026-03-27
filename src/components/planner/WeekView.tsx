@@ -94,7 +94,8 @@ export function WeekView() {
                     onClick={(e) => {
                       e.stopPropagation()
                       const rect = e.currentTarget.getBoundingClientRect()
-                      const minutes = Math.round(((e.clientY - rect.top) / HOUR_HEIGHT) * 60 / 15) * 15
+                      const rawMin = Math.round(((e.clientY - rect.top) / HOUR_HEIGHT) * 60 / 15) * 15
+                      const minutes = Math.min(rawMin, 45)
                       openTaskModal(`${String(h).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`)
                     }}
                   />
