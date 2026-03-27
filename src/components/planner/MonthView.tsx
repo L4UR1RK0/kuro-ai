@@ -3,11 +3,16 @@
 import { useMemo } from 'react'
 import { usePlannerStore } from '@/store/planner'
 import {
-  format, startOfMonth, endOfMonth, startOfWeek, endOfWeek,
+  format, parse, startOfMonth, endOfMonth, startOfWeek, endOfWeek,
   eachDayOfInterval, isSameMonth, isToday, isSameDay,
 } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { COLOR_MAP } from '@/lib/colors'
+
+function formatTaskTime(startTime: string): string {
+  const d = parse(startTime, 'HH:mm', new Date())
+  return format(d, d.getMinutes() === 0 ? 'h a' : 'h:mm a')
+}
 
 export function MonthView() {
   const { selectedDate, tasks, setSelectedDate } = usePlannerStore()
@@ -68,13 +73,11 @@ export function MonthView() {
                 {dayTasks.slice(0, 3).map((task) => (
                   <div
                     key={task.id}
-                    className={cn(
-                      'text-[10px] truncate rounded px-1 py-0.5',
-                      COLOR_MAP[task.color].bg,
-                      COLOR_MAP[task.color].text,
-                    )}
+                    className="flex items-center gap-1 min-w-0 text-[10px] text-white/70"
                   >
-                    {task.title}
+                    <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', COLOR_MAP[task.color].dot)} />
+                    <span className="truncate flex-1">{task.title}</span>
+                    <span className="shrink-0 text-white/40">{formatTaskTime(task.start_time)}</span>
                   </div>
                 ))}
                 {dayTasks.length > 3 && (
