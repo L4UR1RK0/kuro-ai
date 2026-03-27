@@ -79,7 +79,8 @@ export function MultiDayView() {
                     style={{ top: (h - START_HOUR) * HOUR_HEIGHT, height: HOUR_HEIGHT }}
                     onClick={(e) => {
                       const rect = e.currentTarget.getBoundingClientRect()
-                      const minutes = Math.round(((e.clientY - rect.top) / HOUR_HEIGHT) * 60 / 15) * 15
+                      const rawMin = Math.round(((e.clientY - rect.top) / HOUR_HEIGHT) * 60 / 15) * 15
+                      const minutes = Math.min(rawMin, 45)
                       setSelectedDate(day)
                       openTaskModal(`${String(h).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`)
                     }}

@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { Check } from 'lucide-react'
 import { usePlannerStore } from '@/store/planner'
 import { useTasks } from '@/hooks/useTasks'
+import { sliceTime } from '@/lib/time'
 
 interface TaskBlockProps {
   task: Task
@@ -55,7 +56,7 @@ export function TaskBlock({ task, style, compact }: TaskBlockProps) {
           </p>
           {!compact && (
             <p className="text-xs text-white/50 truncate">
-              {task.start_time} – {task.end_time}
+              {sliceTime(task.start_time)} – {sliceTime(task.end_time)}
             </p>
           )}
         </div>
