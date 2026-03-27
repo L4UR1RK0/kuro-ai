@@ -1,9 +1,11 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { usePlannerStore } from '@/store/planner'
-import { format } from 'date-fns'
+import { format, isToday } from 'date-fns'
 import { TaskBlock } from './TaskBlock'
+import { CurrentTimeIndicator } from './CurrentTimeIndicator'
+import { timeToPixels } from '@/lib/timeToPixels'
 import { Task } from '@/types'
 
 const HOUR_HEIGHT = 64 // px per hour
@@ -28,10 +30,20 @@ export function DayView() {
   const dateStr = format(selectedDate, 'yyyy-MM-dd')
   const dayTasks = tasks.filter((t) => t.date === dateStr)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const showIndicator = isToday(selectedDate)
 
   const hours = useMemo(() =>
     Array.from({ length: END_HOUR - START_HOUR }, (_, i) => i + START_HOUR),
   [])
+
+  // Auto-scroll so the current time is in the upper third of the viewport
+  useEffect(() => {
+    if (!scrollRef.current || !showIndicator) return
+    const now = new Date()
+    const top = timeToPixels(now.getHours(), now.getMinutes(), HOUR_HEIGHT)
+    const containerHeight = scrollRef.current.clientHeight
+    scrollRef.current.scrollTo({ top: top - containerHeight / 3, behavior: 'instant' })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSlotClick = (hour: number, e: React.MouseEvent) => {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
@@ -68,8 +80,9 @@ export function DayView() {
             </div>
           ))}
 
-          {/* Tasks */}
+          {/* Tasks + time indicator (share the same ml-16 content area) */}
           <div className="absolute inset-0 ml-16">
+            {showIndicator && <CurrentTimeIndicator hourHeight={HOUR_HEIGHT} />}
             {dayTasks.map((task) => (
               <TaskBlock key={task.id} task={task} style={getTaskStyle(task)} />
             ))}

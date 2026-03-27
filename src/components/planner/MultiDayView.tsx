@@ -1,9 +1,11 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { usePlannerStore } from '@/store/planner'
 import { format, addDays, isToday, isSameDay } from 'date-fns'
 import { TaskBlock } from './TaskBlock'
+import { CurrentTimeIndicator } from './CurrentTimeIndicator'
+import { timeToPixels } from '@/lib/timeToPixels'
 import { Task } from '@/types'
 import { cn } from '@/lib/utils'
 
@@ -27,8 +29,11 @@ function getTaskStyle(task: Task): React.CSSProperties {
 
 export function MultiDayView() {
   const { selectedDate, tasks, setSelectedDate, openTaskModal } = usePlannerStore()
+  const scrollRef = useRef<HTMLDivElement>(null)
+
   const days = useMemo(() => Array.from({ length: DAYS }, (_, i) => addDays(selectedDate, i)), [selectedDate])
   const hours = useMemo(() => Array.from({ length: END_HOUR - START_HOUR }, (_, i) => i + START_HOUR), [])
+  const windowContainsToday = days.some((d) => isToday(d))
 
   const tasksByDay = useMemo(() => {
     const map: Record<string, Task[]> = {}
@@ -38,6 +43,15 @@ export function MultiDayView() {
     })
     return map
   }, [days, tasks])
+
+  // Auto-scroll to current time when today is visible
+  useEffect(() => {
+    if (!scrollRef.current || !windowContainsToday) return
+    const now = new Date()
+    const top = timeToPixels(now.getHours(), now.getMinutes(), HOUR_HEIGHT)
+    const containerHeight = scrollRef.current.clientHeight
+    scrollRef.current.scrollTo({ top: top - containerHeight / 3, behavior: 'instant' })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
@@ -56,7 +70,7 @@ export function MultiDayView() {
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto">
         <div className="flex" style={{ height: HOUR_HEIGHT * (END_HOUR - START_HOUR) }}>
           <div className="w-14 shrink-0 relative">
             {hours.map((h) => (
@@ -85,6 +99,8 @@ export function MultiDayView() {
                     }}
                   />
                 ))}
+                {/* Time indicator only in today's column */}
+                {isToday(day) && <CurrentTimeIndicator hourHeight={HOUR_HEIGHT} />}
                 {(tasksByDay[key] || []).map((task) => (
                   <TaskBlock key={task.id} task={task} style={getTaskStyle(task)} compact />
                 ))}
