@@ -258,6 +258,7 @@ export function TaskModal() {
                 {TASK_ICONS.map((i) => (
                   <button
                     key={i}
+                    title={i.charAt(0).toUpperCase() + i.slice(1)}
                     onClick={() => setIcon(i)}
                     className={cn(
                       'w-8 h-8 rounded-lg flex items-center justify-center transition-all',

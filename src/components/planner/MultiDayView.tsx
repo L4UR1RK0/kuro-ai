@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 const HOUR_HEIGHT = 56
 const START_HOUR = 0
 const END_HOUR = 24
-const DAYS = 3
+const DAYS = 4
 
 function timeToMinutes(time: string): number {
   const [h, m] = time.split(':').map(Number)

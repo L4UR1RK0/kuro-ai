@@ -9,6 +9,18 @@ import { usePlannerStore } from '@/store/planner'
 import { useTasks } from '@/hooks/useTasks'
 import { sliceTime } from '@/lib/time'
 
+function formatDuration(startTime: string, endTime: string): string {
+  const [sh, sm] = startTime.split(':').map(Number)
+  const [eh, em] = endTime.split(':').map(Number)
+  const totalMin = (eh * 60 + em) - (sh * 60 + sm)
+  if (totalMin <= 0) return ''
+  const hours = Math.floor(totalMin / 60)
+  const mins = totalMin % 60
+  if (hours === 0) return `(${mins} min)`
+  if (mins === 0) return `(${hours} hr)`
+  return `(${hours} hr ${mins} min)`
+}
+
 interface TaskBlockProps {
   task: Task
   style?: React.CSSProperties
@@ -57,6 +69,9 @@ export function TaskBlock({ task, style, compact }: TaskBlockProps) {
           {!compact && (
             <p className="text-xs text-white/50 truncate">
               {sliceTime(task.start_time)} – {sliceTime(task.end_time)}
+              {task.start_time && task.end_time && (
+                <span className="ml-1">{formatDuration(task.start_time, task.end_time)}</span>
+              )}
             </p>
           )}
         </div>
